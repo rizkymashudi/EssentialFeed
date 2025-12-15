@@ -60,7 +60,11 @@ class RemoteFeedLoaderTests: XCTestCase {
     // Then
     XCTAssertEqual(capturedErrors, [.invalidData])
   }
-  
+}
+
+
+// MARK: - Helpers
+extension RemoteFeedLoaderTests {
   private func makeSUT(
     url: URL = URL(string: "https://a-url.com")!
   ) -> (sut: RemoteFeedLoader, client: MockHTTPClient) {
