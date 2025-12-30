@@ -113,7 +113,7 @@ extension RemoteFeedLoaderTests {
       "description": description,
       "location": location,
       "image": imageURL.absoluteString
-    ].reduce(into: [String: Any]()) { $0[$1.key] = $1.value }
+    ].compactMapValues { $0 }
     
     return (item, json)
   }
