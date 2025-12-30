@@ -25,20 +25,10 @@ class URLSessionHTTPClient {
 // Unit Tests code
 class URLSessionHTTPClientTests: XCTestCase {
   
-  func test_getFromURL_createsDataTaskWithURL() {
-    let url = URL(string: "http://any-url.com")!
-    let session = URLSessionMock()
-    let sut = URLSessionHTTPClient(session: session)
-    
-    sut.get(from: url)
-    
-    XCTAssertEqual(session.receivedURLs, [url])
-  }
-  
   func test_getFromURL_resumesDataTaskWithURL() {
     let url = URL(string: "http://any-url.com")!
-    let session = URLSessionMock()
-    let task = URLSessionDataTaskMock()
+    let session = URLSessionSpy()
+    let task = URLSessionDataTaskSpy()
     session.stub(url: url, task: task)
     let sut = URLSessionHTTPClient(session: session)
     
@@ -50,8 +40,7 @@ class URLSessionHTTPClientTests: XCTestCase {
 
 // MARK: Helpers
 extension URLSessionHTTPClientTests {
-  private class URLSessionMock: URLSessionProtocol {
-    var receivedURLs: [URL] = []
+  private class URLSessionSpy: URLSessionProtocol {
     private var stubs = [URL: URLSessionDataTaskProtocol]()
     
     func stub(url: URL, task: URLSessionDataTaskProtocol) {
@@ -65,9 +54,6 @@ extension URLSessionHTTPClientTests {
       guard let url = request.url else {
         return DummyDataTask()
       }
-    
-      receivedURLs.append(url)
-      
       return stubs[url] ?? DummyDataTask()
     }
   }
@@ -76,7 +62,7 @@ extension URLSessionHTTPClientTests {
     func resume() {}
   }
   
-  private class URLSessionDataTaskMock: URLSessionDataTaskProtocol {
+  private class URLSessionDataTaskSpy: URLSessionDataTaskProtocol {
     var resumeCallCount: Int = 0
     
     func resume() {
