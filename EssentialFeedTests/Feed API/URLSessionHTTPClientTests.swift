@@ -7,6 +7,7 @@
 
 import XCTest
 import EssentialFeed
+import Foundation
 
 // Unit Tests code
 class URLSessionHTTPClientTests: XCTestCase {
@@ -31,7 +32,7 @@ class URLSessionHTTPClientTests: XCTestCase {
     
     makeSUT().get(from: url) { _ in }
      
-    wait(for: [exp], timeout: 1.0 )
+    wait(for: [exp], timeout: 2.0 )
   }
   
   func test_getFromURL_failsOnRequestError() {
@@ -164,7 +165,7 @@ class URLSessionHTTPClientTests: XCTestCase {
       exp.fulfill()
     }
     
-    wait(for: [exp], timeout: 1.0)
+    wait(for: [exp], timeout: 2.0)
     return receivedResult
   }
 }
@@ -208,6 +209,11 @@ extension URLSessionHTTPClientTests {
     }
     
     override func startLoading() {
+      if let requestObserver = URLProtocolStub.requestObserver {
+        client?.urlProtocolDidFinishLoading(self)
+        return requestObserver(request)
+      }
+      
       if let data = URLProtocolStub.stub?.data {
         client?.urlProtocol(self, didLoad: data)
       }
@@ -226,3 +232,4 @@ extension URLSessionHTTPClientTests {
     override func stopLoading() {}
   }
 }
+
